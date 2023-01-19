@@ -14,14 +14,16 @@ const props = withDefaults(defineProps<{ data?: TicketRecord[] }>(), {
           <th>访客 ID</th>
           <th>中奖号码</th>
           <th>是否合法</th>
+          <th>已兑换</th>
         </tr>
       </thead>
 
       <tbody>
-        <tr v-for="item in props.data" :key="JSON.stringify(item)">
+        <tr v-for="item in props.data" :key="item.visitorId">
           <td>{{ item.visitorId }}</td>
-          <td>{{ item.ticket }}</td>
+          <td>{{ item.code }}</td>
           <td>{{ item.valid ? '是' : '否' }}</td>
+          <td>{{ item.redeemed ? '是' : '否' }}</td>
         </tr>
       </tbody>
     </v-table>

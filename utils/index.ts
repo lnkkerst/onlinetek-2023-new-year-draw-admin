@@ -1,10 +1,14 @@
 export interface TicketRecord {
   visitorId: string;
-  ticket: string;
+  ticket: Ticket | undefined;
+  code: string;
   valid: boolean;
+  redeemed: boolean;
 }
 
 export interface Ticket {
-  code: string;
-  used: boolean;
+  id: string;
+  name: string;
+  amount: number;
+  description: string;
 }

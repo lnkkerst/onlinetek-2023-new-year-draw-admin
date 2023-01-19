@@ -3,11 +3,13 @@ export default defineEventHandler(async event => {
     return;
   }
 
-  if (event.node.req.url?.startsWith('/api/ticket')) {
+  const exclude = ['/api/ticket', '/api/auth'];
+
+  if (exclude.includes(event.node.req.url)) {
     return;
   }
 
-  const token = getHeader(event, 'Authorization');
+  const token = getCookie(event, 'token');
   if (token !== useRuntimeConfig().token) {
     throw createError({
       statusCode: 401,

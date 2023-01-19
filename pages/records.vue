@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import type { TicketRecord } from '~~/utils';
 
-const { data: ticketRecords } = useFetch('/api/records', {
-  headers: { Authorization: useCookie('token').value as string }
-});
+const { data } = useFetch('/api/records');
 </script>
 
 <template>
   <div>
-    <RecordsTable :data="ticketRecords"></RecordsTable>
+    <RecordsTable :data="data?.data"></RecordsTable>
   </div>
 </template>
 

@@ -1,3 +1,6 @@
+import { serverSupabaseServiceRole } from '#supabase/server';
+import type { Ticket } from '~/utils';
+
 export default defineEventHandler(async event => {
   setResponseHeaders(event, {
     'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -12,25 +15,55 @@ export default defineEventHandler(async event => {
     return 'OK';
   }
 
-  const unusedTickets: any[] =
-    (await useStorage().getItem('fs:tickets/unused')) ?? [];
-  if (unusedTickets.length === 0) {
-    return {
-      result: 'faild, no tickets :('
-    };
+  const client = serverSupabaseServiceRole(event);
+
+  const { data } = (await client.from('tickets').select().gt('amount', 0)) as {
+    data: Ticket[] | null;
+  };
+
+  if (!data || data.length === 0) {
+    return { result: 'faild', message: 'No tickets :(' };
   }
 
-  const usedTickets: any[] =
-    (await useStorage().getItem('fs:tickets/used')) ?? [];
+  let total = 0;
+  data.forEach(val => (total += val.amount));
+  const resultIndex = Math.floor(Math.random() * total);
+  let cur = 0;
+  let result: Ticket | undefined;
+  for (const item of data) {
+    cur += item.amount;
+    if (cur >= resultIndex) {
+      result = item;
+      break;
+    }
+  }
+  if (!result) {
+    result = data.at(-1) as Ticket;
+  }
 
-  usedTickets.push(...unusedTickets.splice(unusedTickets.length - 1));
+  const code = Array.from({ length: 6 }, () =>
+    String.fromCharCode(
+      (Math.random() > 0.5 ? 65 : 97) + Math.ceil(Math.random() * 26)
+    )
+  ).join('');
 
-  await useStorage().setItem('fs:tickets/unused', unusedTickets);
-  await useStorage().setItem('fs:tickets/used', usedTickets);
+  await client
+    .from('tickets')
+    .update({ amount: result.amount - 1 } as never)
+    .eq('id', result.id);
 
-  const records: any[] = (await useStorage().getItem('fs:records/all')) ?? [];
-  records.push({ visitorId: '', ticket: usedTickets.at(-1), valid: true });
-  await useStorage().setItem('fs:records/all', records);
+  const { visitorId } = getQuery(event);
 
-  return { result: 'success', data: { code: usedTickets.at(-1) } };
+  await client
+    .from('records')
+    .insert({ visitorId, ticket: result.id, code, valid: true } as never);
+
+  return {
+    result: 'success',
+    data: {
+      code,
+      name: result.name,
+      description: result.description
+    }
+  };
 });

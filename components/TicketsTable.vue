@@ -11,15 +11,17 @@ const props = withDefaults(defineProps<{ data?: Ticket[] }>(), {
     <v-table>
       <thead>
         <tr>
-          <th>号码</th>
-          <th>已发放</th>
+          <th>名称</th>
+          <th>数量</th>
+          <th>描述</th>
         </tr>
       </thead>
 
       <tbody>
         <tr v-for="item in props.data" :key="JSON.stringify(item)">
-          <td>{{ item.code }}</td>
-          <td>{{ item.used ? '是' : '否' }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.amount }}</td>
+          <td>{{ item.description }}</td>
         </tr>
       </tbody>
     </v-table>

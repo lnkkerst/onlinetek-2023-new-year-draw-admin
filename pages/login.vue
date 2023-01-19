@@ -12,8 +12,7 @@ const handleLogin = async () => {
   logining.value = true;
   try {
     await $fetch('/api/auth', {
-      method: 'post',
-      headers: { Authorization: token.value }
+      method: 'post'
     });
     useCookie('token').value = token.value;
     $toast.fire({ title: '登陆成功', icon: 'success' });
@@ -32,7 +31,7 @@ const handleLogin = async () => {
 
 <template>
   <div grid place-items="center" h-screen w-screen>
-    <v-card min-w="96">
+    <v-card w="4/5" max-w="96">
       <v-card-title text-center mt="4">验证</v-card-title>
 
       <v-card-text>
