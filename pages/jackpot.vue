@@ -89,13 +89,16 @@ const dialog = ref<{
           :width="4"
         ></v-progress-circular>
       </v-overlay>
-      <TicketsTable :data="data?.data"></TicketsTable>
+      <TicketsTable
+        :data="data?.data"
+        @click-edit="e => (dialog = { open: true, action: 'edit', ticket: e })"
+      ></TicketsTable>
     </div>
 
     <TicketDialog
       v-model="dialog.open"
       :action="dialog.action"
-      :ticket="dialog.ticket"
+      :data="dialog.ticket"
     ></TicketDialog>
   </div>
 </template>

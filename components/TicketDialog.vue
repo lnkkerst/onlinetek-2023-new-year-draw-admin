@@ -10,13 +10,17 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
 }>();
 
+const { $toast } = useNuxtApp();
+
 const emptyForm: Omit<Ticket, 'id' | 'used'> = {
   name: '',
   amount: 0,
   description: ''
 };
 const form = ref<typeof emptyForm>(
-  props.action === 'add' ? { ...emptyForm } : props.data ?? emptyForm
+  props.action === 'add'
+    ? { ...emptyForm }
+    : ({ ...props.data } as typeof emptyForm) ?? emptyForm
 );
 const formEl = ref<any>();
 
@@ -25,25 +29,43 @@ watch(
   val => {
     if (val) {
       form.value =
-        props.action === 'add' ? { ...emptyForm } : props.data ?? emptyForm;
+        props.action === 'add'
+          ? { ...emptyForm }
+          : ({ ...props.data } as typeof emptyForm) ?? emptyForm;
     }
   }
 );
 
 const handleAdd = async () => {
-  console.log(formEl);
   if (!formEl.value) {
     return;
   }
   const { valid } = await formEl.value?.validate?.();
-  console.log(valid);
   if (!valid) {
     return;
   }
-  $fetch('/api/tickets', { method: 'post', body: { ...form.value } });
+  await $fetch('/api/tickets', { method: 'post', body: { ...form.value } });
+  emit('update:modelValue', false);
+  $toast.fire({ title: '添加成功', icon: 'success' });
 };
 const handleEdit = async () => {
-  console.log('edi');
+  if (!formEl.value) {
+    return;
+  }
+  const { valid } = await formEl.value?.validate?.();
+  if (!valid) {
+    return;
+  }
+  await $fetch(`/api/tickets/${props.data?.id}`, {
+    method: 'put',
+    body: { ...form.value }
+  });
+  emit('update:modelValue', false);
+  $toast.fire({ title: '修改成功', icon: 'success' });
+};
+const handleDelete = async () => {
+  await $fetch(`/api/tickets/${props.data?.id}`, { method: 'delete' });
+  $toast.fire({ title: '删除成功', icon: 'success' });
 };
 </script>
 
@@ -63,7 +85,7 @@ export default defineComponent({
       <v-card-title>
         <span>{{ { add: '添加奖项', edit: '编辑奖项' }[props.action] }}</span>
       </v-card-title>
-      {{ form }}
+
       <v-card-text>
         <v-container>
           <v-form ref="formEl">
@@ -86,7 +108,15 @@ export default defineComponent({
           </v-form>
         </v-container>
       </v-card-text>
+
       <v-card-actions>
+        <v-btn
+          v-if="props.action === 'edit'"
+          color="error"
+          @click="handleDelete"
+        >
+          删除
+        </v-btn>
         <v-spacer></v-spacer>
         <v-btn
           v-if="props.action === 'edit'"

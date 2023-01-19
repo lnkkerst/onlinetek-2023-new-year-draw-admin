@@ -3,9 +3,9 @@ export default defineEventHandler(async event => {
     return;
   }
 
-  const exclude = ['/api/ticket', '/api/auth'];
+  const exclude = ['/api/ticket', '/api/ticket/', '/api/auth'];
 
-  if (exclude.includes(event.node.req.url)) {
+  if (exclude.includes(event.node.req.url.split('?')[0])) {
     return;
   }
 

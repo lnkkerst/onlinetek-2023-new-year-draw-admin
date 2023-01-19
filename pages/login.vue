@@ -12,7 +12,8 @@ const handleLogin = async () => {
   logining.value = true;
   try {
     await $fetch('/api/auth', {
-      method: 'post'
+      method: 'post',
+      body: { token: token.value }
     });
     useCookie('token').value = token.value;
     $toast.fire({ title: '登陆成功', icon: 'success' });
