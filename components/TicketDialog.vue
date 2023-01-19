@@ -8,6 +8,7 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
+  (e: 'modify'): void;
 }>();
 
 const { $toast } = useNuxtApp();
@@ -47,6 +48,7 @@ const handleAdd = async () => {
   await $fetch('/api/tickets', { method: 'post', body: { ...form.value } });
   emit('update:modelValue', false);
   $toast.fire({ title: '添加成功', icon: 'success' });
+  emit('modify');
 };
 const handleEdit = async () => {
   if (!formEl.value) {
@@ -62,10 +64,22 @@ const handleEdit = async () => {
   });
   emit('update:modelValue', false);
   $toast.fire({ title: '修改成功', icon: 'success' });
+  emit('modify');
 };
 const handleDelete = async () => {
-  await $fetch(`/api/tickets/${props.data?.id}`, { method: 'delete' });
-  $toast.fire({ title: '删除成功', icon: 'success' });
+  try {
+    await $fetch(`/api/tickets/${props.data?.id}`, { method: 'delete' });
+    $toast.fire({ title: '删除成功', icon: 'success' });
+    emit('modify');
+    emit('update:modelValue', false);
+  } catch (_e) {
+    const e = _e as any;
+    if (e.statusCode === 409) {
+      $toast.fire({ title: '删除失败，有人拿了这个奖项', icon: 'error' });
+    } else {
+      $toast.fire({ title: '删除失败，未知错误', icon: 'error' });
+    }
+  }
 };
 </script>
 

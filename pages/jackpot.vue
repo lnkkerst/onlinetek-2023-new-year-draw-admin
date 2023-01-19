@@ -27,6 +27,10 @@ const dialog = ref<{
   open: false,
   action: 'add'
 });
+
+const refresh = () => {
+  filter.value = { ...filter.value };
+};
 </script>
 
 <template>
@@ -51,7 +55,7 @@ const dialog = ref<{
         icon="mdi-refresh"
         color="secondary"
         size="small"
-        @click="filter = { ...filter }"
+        @click="refresh"
       ></v-btn>
     </div>
 
@@ -99,6 +103,7 @@ const dialog = ref<{
       v-model="dialog.open"
       :action="dialog.action"
       :data="dialog.ticket"
+      @modify="refresh"
     ></TicketDialog>
   </div>
 </template>

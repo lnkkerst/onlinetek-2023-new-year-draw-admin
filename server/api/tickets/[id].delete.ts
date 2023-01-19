@@ -8,15 +8,21 @@ export default defineEventHandler(async event => {
     .eq('id', event.context.params.id)
     .select();
 
-  if (!data) {
+  if (error) {
+    if (error.code === '23503') {
+      throw createError({
+        statusCode: 409,
+        message: "Can't delete"
+      });
+    }
     throw createError({
-      statusCode: 404
+      statusCode: 400
     });
   }
 
-  if (error) {
+  if (!data) {
     throw createError({
-      statusCode: 400
+      statusCode: 404
     });
   }
 

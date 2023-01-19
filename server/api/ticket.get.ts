@@ -17,6 +17,38 @@ export default defineEventHandler(async event => {
 
   const client = serverSupabaseServiceRole(event);
 
+  const { visitorId } = getQuery(event);
+
+  const { data: inDb } = await client
+    .from('records')
+    .select(
+      `
+code,
+ticket (
+name,
+description
+)
+`
+    )
+    .eq('visitorId', visitorId)
+    .limit(1)
+    .single();
+
+  if (inDb) {
+    const {
+      code,
+      ticket: { name, description }
+    } = inDb as any;
+    return {
+      result: 'success',
+      data: {
+        code,
+        name,
+        description
+      }
+    };
+  }
+
   const { data } = (await client.from('tickets').select().gt('amount', 0)) as {
     data: Ticket[] | null;
   };
@@ -51,8 +83,6 @@ export default defineEventHandler(async event => {
     .from('tickets')
     .update({ amount: result.amount - 1 } as never)
     .eq('id', result.id);
-
-  const { visitorId } = getQuery(event);
 
   await client
     .from('records')
