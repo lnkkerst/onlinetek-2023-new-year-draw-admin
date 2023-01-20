@@ -19,6 +19,7 @@ export default defineEventHandler(async event => {
   size = parseInt(size as string);
   let select = client.from('records').select(
     `
+id,
 visitorId,
 ticket (
   id,

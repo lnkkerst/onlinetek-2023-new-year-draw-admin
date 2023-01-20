@@ -1,4 +1,5 @@
 export interface TicketRecord {
+  id: string;
   visitorId: string;
   ticket: Ticket | undefined;
   code: string;

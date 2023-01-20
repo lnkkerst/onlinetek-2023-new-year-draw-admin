@@ -61,6 +61,38 @@ const handleEmptyOut = async () => {
   }
   emptying.value = false;
 };
+const handleChangeStatus = async (
+  id: string,
+  status: { redeemed: boolean }
+) => {
+  const { redeemed } = status;
+  try {
+    await $fetch(`/api/records/${id}`, { method: 'put', body: { redeemed } });
+    $toast.fire({
+      title: `${redeemed ? '兑换' : '撤销'}成功`,
+      icon: 'success'
+    });
+  } catch (_e) {
+    $toast.fire({
+      title: `${redeemed ? '兑换' : '撤销'}失败，未知错误`,
+      icon: 'error'
+    });
+  }
+};
+const handleDelete = async (id: string) => {
+  try {
+    await $fetch(`/api/records/${id}`, { method: 'delete' });
+    $toast.fire({
+      title: `删除成功`,
+      icon: 'success'
+    });
+  } catch (_e) {
+    $toast.fire({
+      title: `删除失败，未知错误`,
+      icon: 'error'
+    });
+  }
+};
 const refresh = async () => {
   loading.value = true;
   data.value = (await fetchFilteredData()).data;
@@ -205,7 +237,22 @@ onMounted(async () => {
           :width="4"
         ></v-progress-circular>
       </v-overlay>
-      <RecordsTable :data="data" min-w-128></RecordsTable>
+      <RecordsTable
+        :data="data"
+        min-w-128
+        @change-status="
+          (async e => {
+            await handleChangeStatus(e.id, { ...e.status });
+            refresh();
+          })($event)
+        "
+        @delete-record="
+          (async e => {
+            await handleDelete(e);
+            refresh();
+          })($event)
+        "
+      ></RecordsTable>
     </div>
   </div>
 </template>

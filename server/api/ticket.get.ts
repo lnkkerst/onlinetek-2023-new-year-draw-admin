@@ -68,7 +68,6 @@ description
   ).join('');
 
   const valid = !!visitorId && checkVisitorId(visitorId);
-  console.log(valid);
 
   let total = 0;
   data.forEach(val => (total += val.amount));
