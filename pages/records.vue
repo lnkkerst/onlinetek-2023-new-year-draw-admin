@@ -105,7 +105,7 @@ onMounted(async () => {
       ></v-btn>
     </div>
 
-    <v-dialog v-model="emptyOutDialog">
+    <v-dialog v-model="emptyOutDialog" max-w-xl>
       <v-card>
         <v-card-title>高危操作</v-card-title>
         <v-card-text>确定要清空所有抽奖记录吗？</v-card-text>

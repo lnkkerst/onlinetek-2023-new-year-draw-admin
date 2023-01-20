@@ -93,6 +93,7 @@ export default defineComponent({
   <v-dialog
     :model-value="props.modelValue"
     persistent
+    max-w-xl
     @update:model-value="val => emit('update:modelValue', val)"
   >
     <v-card>
