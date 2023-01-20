@@ -1,6 +1,5 @@
 import { serverSupabaseServiceRole } from '#supabase/server';
 import type { Ticket } from '~/utils';
-/// @ts-expect-error js file
 import { checkVisitorId } from '~/server/utils/checkVisitorId';
 
 export default defineEventHandler(async event => {

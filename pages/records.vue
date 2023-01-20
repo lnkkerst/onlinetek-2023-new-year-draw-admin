@@ -7,6 +7,9 @@ const collapse = ref(true);
 const loading = ref(false);
 const emptyOutDialog = ref(false);
 const emptying = ref(false);
+const deleteDialog = ref(false);
+const deleteId = ref('');
+const deleting = ref(false);
 const filterReset = {
   visitorId: '',
   code: '',
@@ -79,7 +82,9 @@ const handleChangeStatus = async (
     });
   }
 };
-const handleDelete = async (id: string) => {
+const handleDelete = async () => {
+  deleting.value = true;
+  const id = deleteId.value;
   try {
     await $fetch(`/api/records/${id}`, { method: 'delete' });
     $toast.fire({
@@ -92,6 +97,7 @@ const handleDelete = async (id: string) => {
       icon: 'error'
     });
   }
+  deleting.value = false;
 };
 const refresh = async () => {
   loading.value = true;
@@ -151,12 +157,38 @@ onMounted(async () => {
               async () => {
                 await handleEmptyOut();
                 emptyOutDialog = false;
+                await refresh();
               }
             "
           >
             确定
           </v-btn>
           <v-btn text @click="emptyOutDialog = false">取消</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="deleteDialog" max-w-xl>
+      <v-card>
+        <v-card-title>有点危险的操作</v-card-title>
+        <v-card-text>确定要删除这条记录吗？</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            color="error"
+            :loading="deleting"
+            @click="
+              async () => {
+                await handleDelete();
+                deleteDialog = false;
+                await refresh();
+              }
+            "
+          >
+            确定
+          </v-btn>
+          <v-btn text @click="deleteDialog = false">取消</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -246,12 +278,7 @@ onMounted(async () => {
             refresh();
           })($event)
         "
-        @delete-record="
-          (async e => {
-            await handleDelete(e);
-            refresh();
-          })($event)
-        "
+        @delete-record="e => ((deleteId = e), (deleteDialog = true))"
       ></RecordsTable>
     </div>
   </div>
