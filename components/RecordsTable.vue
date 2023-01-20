@@ -8,7 +8,7 @@ const props = withDefaults(defineProps<{ data?: TicketRecord[] }>(), {
 
 <template>
   <div>
-    <v-table border hover fixed-header>
+    <v-table hover fixed-header>
       <thead>
         <tr>
           <th>访客 ID</th>

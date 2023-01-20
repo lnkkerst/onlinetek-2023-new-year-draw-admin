@@ -1,5 +1,7 @@
 import { serverSupabaseServiceRole } from '#supabase/server';
 import type { Ticket } from '~/utils';
+/// @ts-expect-error js file
+import { checkVisitorId } from '~/server/utils/checkVisitorId';
 
 export default defineEventHandler(async event => {
   setResponseHeaders(event, {
@@ -57,6 +59,17 @@ description
     return { result: 'faild', message: 'No tickets :(' };
   }
 
+  const code = Array.from(
+    { length: 6 },
+    () =>
+      'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM012345678978318731'[
+        Math.floor(Math.random() * 26 * 2 + 10)
+      ]
+  ).join('');
+
+  const valid = !!visitorId && checkVisitorId(visitorId);
+  console.log(valid);
+
   let total = 0;
   data.forEach(val => (total += val.amount));
   const resultIndex = Math.floor(Math.random() * total);
@@ -73,20 +86,16 @@ description
     result = data.at(-1) as Ticket;
   }
 
-  const code = Array.from({ length: 6 }, () =>
-    String.fromCharCode(
-      (Math.random() > 0.5 ? 65 : 97) + Math.ceil(Math.random() * 26)
-    )
-  ).join('');
-
-  await client
-    .from('tickets')
-    .update({ amount: result.amount - 1 } as never)
-    .eq('id', result.id);
+  if (valid) {
+    await client
+      .from('tickets')
+      .update({ amount: result.amount - 1 } as never)
+      .eq('id', result.id);
+  }
 
   await client
     .from('records')
-    .insert({ visitorId, ticket: result.id, code, valid: true } as never);
+    .insert({ visitorId, ticket: result.id, code, valid } as never);
 
   return {
     result: 'success',

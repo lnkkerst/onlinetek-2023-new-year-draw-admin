@@ -196,7 +196,7 @@ onMounted(async () => {
       </div>
     </Collapse>
 
-    <div relative>
+    <div relative overflow-x-auto border>
       <v-overlay v-model="loading" contained flex items-center justify-center>
         <v-progress-circular
           indeterminate
@@ -205,7 +205,7 @@ onMounted(async () => {
           :width="4"
         ></v-progress-circular>
       </v-overlay>
-      <RecordsTable :data="data"></RecordsTable>
+      <RecordsTable :data="data" min-w-128></RecordsTable>
     </div>
   </div>
 </template>

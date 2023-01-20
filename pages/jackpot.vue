@@ -84,7 +84,7 @@ const refresh = () => {
       </div>
     </Collapse>
 
-    <div relative>
+    <div relative overflow-x-auto border>
       <v-overlay v-model="loading" contained flex items-center justify-center>
         <v-progress-circular
           indeterminate
@@ -95,6 +95,7 @@ const refresh = () => {
       </v-overlay>
       <TicketsTable
         :data="data?.data"
+        min-w-128
         @click-edit="e => (dialog = { open: true, action: 'edit', ticket: e })"
       ></TicketsTable>
     </div>
