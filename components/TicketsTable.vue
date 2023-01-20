@@ -11,7 +11,7 @@ const emit = defineEmits<{
 
 <template>
   <div>
-    <v-table>
+    <v-table fixed-header hover border>
       <thead>
         <tr>
           <th>名称</th>

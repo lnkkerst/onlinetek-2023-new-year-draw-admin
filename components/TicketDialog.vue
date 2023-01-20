@@ -118,7 +118,11 @@ export default defineComponent({
                   '数量必须是自然数'
               ]"
             ></v-text-field>
-            <v-textarea label="描述" placeholder="可以空着"></v-textarea>
+            <v-textarea
+              v-model="form.description"
+              label="描述"
+              placeholder="可以空着"
+            ></v-textarea>
           </v-form>
         </v-container>
       </v-card-text>
