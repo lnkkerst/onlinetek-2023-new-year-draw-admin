@@ -30,6 +30,7 @@ const tickets = await useFetch('/api/tickets').then(res =>
   res.data.value?.data.map(val => ({ name: val.name, id: val.id }))
 );
 const data = ref<TicketRecord[]>([]);
+const count = ref(0);
 
 const fetchFilteredData = async <
   T extends { count: number; data: TicketRecord[] }
@@ -101,7 +102,10 @@ const handleDelete = async () => {
 };
 const refresh = async () => {
   loading.value = true;
-  data.value = (await fetchFilteredData()).data;
+  const res = await fetchFilteredData();
+  data.value = res.data;
+  count.value = res.count;
+
   loading.value = false;
 };
 
@@ -120,6 +124,8 @@ onMounted(async () => {
       >
         筛选
       </v-btn>
+
+      <span ml="2">{{ `共${count}条数据` }}</span>
 
       <div grow></div>
 

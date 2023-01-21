@@ -43,6 +43,7 @@ const refresh = () => {
       >
         筛选
       </v-btn>
+      <span ml="2">{{ `共${(data as any)?.count}条数据` }}</span>
       <div grow></div>
       <v-btn
         icon="mdi-plus"
