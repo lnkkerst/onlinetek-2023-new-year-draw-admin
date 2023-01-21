@@ -20,6 +20,14 @@ export default defineEventHandler(async event => {
 
   const { visitorId } = getQuery(event);
 
+  const { data } = (await client.from('tickets').select().gt('amount', 0)) as {
+    data: Ticket[] | null;
+  };
+
+  if (!data || data.length === 0) {
+    return { result: 'faild', message: 'No tickets :(' };
+  }
+
   const { data: inDb } = await client
     .from('records')
     .select(
@@ -48,14 +56,6 @@ description
         description
       }
     };
-  }
-
-  const { data } = (await client.from('tickets').select().gt('amount', 0)) as {
-    data: Ticket[] | null;
-  };
-
-  if (!data || data.length === 0) {
-    return { result: 'faild', message: 'No tickets :(' };
   }
 
   const code = Array.from(
